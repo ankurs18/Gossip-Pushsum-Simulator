@@ -1,4 +1,4 @@
-defmodule GossipPushsumSimulator.Application do
+defmodule GPS.Application do
   # See https://hexdocs.pm/elixir/Application.html
   # for more information on OTP Applications
   @moduledoc false
@@ -6,14 +6,9 @@ defmodule GossipPushsumSimulator.Application do
   use Application
 
   def start(_type, _args) do
-    children = [
-      # Starts a worker by calling: GossipPushsumSimulator.Worker.start_link(arg)
-      # {GossipPushsumSimulator.Worker, arg}
-    ]
+    children = [GPS.NodeSupervisor]
 
-    # See https://hexdocs.pm/elixir/Supervisor.html
-    # for other strategies and supported options
-    opts = [strategy: :one_for_one, name: GossipPushsumSimulator.Supervisor]
-    Supervisor.start_link(children, opts)
+    opts = [DynamicSupervisor, strategy: :one_for_one, name: GPS.Supervisor]
+    Supervisor.start_link(children, strategy: :one_for_one)
   end
 end

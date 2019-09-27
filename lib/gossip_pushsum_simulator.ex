@@ -1,4 +1,4 @@
-defmodule GossipPushsumSimulator do
+defmodule GPS do
   @moduledoc """
   Documentation for GossipPushsumSimulator.
   """
