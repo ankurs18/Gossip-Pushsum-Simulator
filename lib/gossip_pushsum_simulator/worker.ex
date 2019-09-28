@@ -15,6 +15,10 @@ defmodule GPS.NodeWorker do
     {:noreply, {new_neighbors, count}}
   end
 
+  def handle_cast({:add_neighbour, new_neighbor}, {neighbors, count}) do
+    {:noreply, {neighbors ++ [new_neighbor], count}}
+  end
+
   def handle_call({:pick_random}, _from, {neighbors, count}) do
     random_pid = Enum.random(neighbors)
     {:reply, random_pid, {neighbors, count}}
