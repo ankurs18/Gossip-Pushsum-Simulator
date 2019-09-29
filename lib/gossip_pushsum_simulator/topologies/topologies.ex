@@ -12,9 +12,9 @@ defmodule GPS.Topologies do
   end
 
   def build_rand2D_topology(list_nodes) do
-    IO.inspect(list_nodes)
+    #IO.inspect(list_nodes)
     coordinates_map = Enum.reduce(list_nodes, %{}, &random_coordinates_generator/2)
-    IO.inspect(coordinates_map)
+    #IO.inspect(coordinates_map)
 
     Enum.each(coordinates_map, fn {k, v} ->
       [x1, y1] = v
@@ -22,8 +22,8 @@ defmodule GPS.Topologies do
       for x <- Map.keys(coordinates_map) -- [k] do
         [x2, y2] = Map.get(coordinates_map, x)
 
-        if :math.sqrt(:math.pow(x2 - x1, 2) + :math.pow(y2 - y1, 2)) < 0.1 do
-          GenServer.cast(k, {:add_neighbour, x})
+        if :math.sqrt(:math.pow(x2 - x1, 2) + :math.pow(y2 - y1, 2)) <= 0.1 do
+          GenServer.cast(k, {:add_neighbor, x})
         end
       end
     end)
@@ -31,7 +31,7 @@ defmodule GPS.Topologies do
 
   def build_full_topology(list_nodes) do
     for elem <- list_nodes do
-      GenServer.cast(elem, {:set_neighbours, list_nodes -- [elem]})
+      GenServer.cast(elem, {:set_neighbors, list_nodes -- [elem]})
     end
   end
 
@@ -55,6 +55,6 @@ defmodule GPS.Topologies do
         Enum.at(list_nodes, i)
       end
 
-    GenServer.cast(Enum.at(list_nodes, self_index), {:set_neighbours, neighbors})
+    GenServer.cast(Enum.at(list_nodes, self_index), {:set_neighbors, neighbors})
   end
 end
