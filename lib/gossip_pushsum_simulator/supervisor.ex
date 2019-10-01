@@ -9,8 +9,14 @@ defmodule GPS.NodeSupervisor do
     DynamicSupervisor.init(strategy: :one_for_one)
   end
 
-  def start_worker() do
-    {:ok, pid} = DynamicSupervisor.start_child(__MODULE__, GPS.NodeWorker)
+  def start_worker(:gossip) do
+    {:ok, pid} = DynamicSupervisor.start_child(__MODULE__, GPS.Gossip.Node)
+    pid
+  end
+
+  def start_worker(:push_sum, i, start_time) do
+    spec = {GPS.PushSum.Node, [i, start_time]}
+    {:ok, pid} = DynamicSupervisor.start_child(__MODULE__, spec)
     pid
   end
 end
