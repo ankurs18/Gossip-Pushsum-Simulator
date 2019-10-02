@@ -10,6 +10,14 @@ defmodule GPS.Gossip.Node do
     GenServer.cast(pid, {:send_next, message})
   end
 
+  def add_neighbor(pid, new_neighbor) do
+    GenServer.cast(pid, {:add_neighbor,new_neighbor})
+  end
+
+  def add_multiple_neighbors(pid, new_neighbors) do
+    GenServer.cast(pid, {:set_neighbors,new_neighbors})
+  end
+
   def start_link(_) do
     GenServer.start_link(__MODULE__, [])
   end
