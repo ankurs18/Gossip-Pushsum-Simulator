@@ -124,6 +124,7 @@ defmodule GPS.Topologies do
 
   def build_honeycomb_topology(num_nodes, list_nodes, is_random) do
     grid_size = :math.sqrt(num_nodes) |> round()
+
     for i <- 1..(grid_size * grid_size) do
       remainder = rem(i, grid_size)
       remainder_two = rem(remainder, 4)
@@ -283,14 +284,25 @@ defmodule GPS.Topologies do
     [self_index | neighbors_index] = neighborhood
     # Shifted the nodes' position by one because we designed
     #  torus and honeybcomb with nodes starting at 1 instead of 0
+
     list_nodes = [nil | list_nodes]
 
     neighbors =
       for i <- neighbors_index do
         Enum.at(list_nodes, i)
       end
-    #IO.inspect(neighbors)
-    neighbors = if is_random, do: [List.delete_at(list_nodes,1) | neighbors], else: neighbors
+
+    # index = Enum.find_index(neighbors, fn x -> x == nil end)
+    # if index !=nil, do: IO.inspect(index, label: "index")
+    # IO.inspect(list_nodes)
+
+    neighbors =
+      if is_random do
+        [Enum.random(List.delete_at(list_nodes, 0)) | neighbors]
+      else
+        neighbors
+      end
+
     GenServer.cast(Enum.at(list_nodes, self_index), {:set_neighbors, neighbors})
   end
 end

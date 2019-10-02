@@ -11,6 +11,7 @@ defmodule GPS.Main do
       case topology do
         :torus -> :math.pow(num_nodes, 1 / 3) |> round() |> :math.pow(3) |> round()
         :honeycomb -> :math.sqrt(num_nodes) |> round() |> :math.pow(2) |> round()
+        :randhoneycomb -> :math.sqrt(num_nodes) |> round() |> :math.pow(2) |> round()
         _ -> num_nodes
       end
 
