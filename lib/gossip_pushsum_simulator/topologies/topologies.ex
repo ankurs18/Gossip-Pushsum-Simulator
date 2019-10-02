@@ -124,9 +124,6 @@ defmodule GPS.Topologies do
 
   def build_honeycomb_topology(num_nodes, list_nodes, is_random) do
     grid_size = :math.sqrt(num_nodes) |> round()
-    numbers = 1..(grid_size * grid_size)
-    list = Enum.to_list(numbers)
-
     for i <- 1..(grid_size * grid_size) do
       remainder = rem(i, grid_size)
       remainder_two = rem(remainder, 4)
@@ -292,8 +289,8 @@ defmodule GPS.Topologies do
       for i <- neighbors_index do
         Enum.at(list_nodes, i)
       end
-
-    neighbors = if is_random, do: [neighbors | Enum.random(list_nodes)], else: neighbors
+    #IO.inspect(neighbors)
+    neighbors = if is_random, do: [List.delete_at(list_nodes,1) | neighbors], else: neighbors
     GenServer.cast(Enum.at(list_nodes, self_index), {:set_neighbors, neighbors})
   end
 end

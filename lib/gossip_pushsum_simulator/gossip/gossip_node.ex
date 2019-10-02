@@ -1,16 +1,19 @@
 defmodule GPS.Gossip.Node do
-  use GenServer
+  use GenServer, restart: :transient
+  # Used the restart policy as "Transient" since
+  # we are killing the nodes once the convergance criteria is fulfilled, 
+  # and thus don't want the supervisor restarting its children
+  # if the they are exited with reason with reason "normal"
 
   ####################### API ##############################
   def send_message(pid, message) do
     GenServer.cast(pid, {:send_next, message})
   end
 
-  
-
   def start_link(_) do
     GenServer.start_link(__MODULE__, [])
   end
+
   ####################### SERVER ##############################
   def init(_args) do
     neighbors = []
@@ -19,12 +22,9 @@ defmodule GPS.Gossip.Node do
     {:ok, {neighbors, count, is_active}}
   end
 
-
   def handle_cast({:set_neighbors, new_neighbors}, {_neighbors, count, is_active}) do
     {:noreply, {new_neighbors, count, is_active}}
   end
-
-  
 
   def handle_cast({:send_next, message}, {neighbors, count, is_active}) do
     new_count = count + 1
@@ -61,13 +61,13 @@ defmodule GPS.Gossip.Node do
   def resend_gossip(pid) do
     Process.send_after(pid, {:gossip_resend}, 500)
   end
-  
+
   def handle_info({:gossip_resend}, state) do
     send_message(self(), :periodic_message)
     {:noreply, state}
   end
-  
-    # def handle_cast({:send_next_old, message}, {neighbors, count, is_active}) do
+
+  # def handle_cast({:send_next_old, message}, {neighbors, count, is_active}) do
   #   active_neighbors = Enum.filter(neighbors, fn pid -> GPS.Gossip.Node.check_active(pid) end)
 
   #   if count <= 10 and length(active_neighbors) > 0 do

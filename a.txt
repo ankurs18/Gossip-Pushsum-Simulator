@@ -1,4 +1,5 @@
-50.90860290389293,
-50.90860290333185
-50.90860290321531,
-50.90860290397035,
+iex(1)> GPS.Main.start(10000, :line, :gossip)
+Time taken: 586813
+
+iex(1)> GPS.Main.start(5000, :line, :gossip)
+Time taken: 512985

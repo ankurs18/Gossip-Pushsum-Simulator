@@ -1,5 +1,9 @@
 defmodule GPS.PushSum.Node do
-  use GenServer
+  use GenServer, restart: :transient
+  # Used the restart policy as "Transient" since
+  # we are killing the nodes once the convergance criteria is fulfilled, 
+  # and thus don't want the supervisor restarting its children
+  # if the they are exited with reason with reason "normal"
 
   ####################### API ##############################
   def send_message(pid, s, w) do
@@ -11,7 +15,7 @@ defmodule GPS.PushSum.Node do
   end
 
   ####################### SERVER ##############################
-  
+
   def init([actor_number, start_time]) do
     # IO.puts("init: #{actor_number}")
     {:ok, {[], actor_number, 1, actor_number / 1, 0, start_time}}

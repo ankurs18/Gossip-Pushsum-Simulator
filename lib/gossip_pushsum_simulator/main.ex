@@ -18,17 +18,24 @@ defmodule GPS.Main do
       :gossip ->
         nodes = initialize_nodes(algorithm, num_nodes)
         GPS.Topologies.build_topologies(num_nodes, nodes, topology)
-        {:ok, pid} = GPS.Gossip.Driver.start_link(System.monotonic_time(:millisecond), nodes)
-        GPS.Gossip.Driver.begin(pid)
-        check_convergence_new(nodes, start_time, (1 - convergance_percentage) * num_nodes)
+        # {:ok, pid} = GPS.Gossip.Driver.start_link(System.monotonic_time(:millisecond), nodes)
+        begin_gossip(nodes, start_time)
 
       :push_sum ->
         nodes = initialize_nodes(algorithm, num_nodes, start_time)
         GPS.Topologies.build_topologies(num_nodes, nodes, topology)
-        {:ok, pid} = GPS.PushSum.Driver.start_link(System.monotonic_time(:millisecond), nodes)
-        GPS.PushSum.Driver.begin(pid)
-        #check_convergence_new(nodes, start_time, (1 - convergance_percentage) * num_nodes)
+        begin_pushsum(nodes, start_time)
     end
+  end
+
+  defp begin_gossip(nodes_list, start_time) do
+    GPS.Gossip.Node.send_message(Enum.random(nodes_list), :rumor)
+    check_convergence_new(nodes_list, start_time)
+  end
+
+  defp begin_pushsum(nodes_list, start_time) do
+    GPS.PushSum.Node.send_message(Enum.random(nodes_list), 0, 0)
+    check_convergence_new(nodes_list, start_time)
   end
 
   defp initialize_nodes(:gossip, num_nodes) do
@@ -56,19 +63,18 @@ defmodule GPS.Main do
     end
   end
 
-  def check_convergence_new(nodes_list, start_time, convergance_num) do
+  def check_convergence_new(nodes_list, start_time) do
     nodes_list = Enum.filter(nodes_list, fn pid -> Process.alive?(pid) end)
     len = length(nodes_list)
 
     if(len <= 1) do
-      IO.puts("nodes remaining=  #{len}, convergence no=  #{convergance_num}")
-
+      IO.puts("nodes remaining=  #{len}")
       end_time = System.monotonic_time(:millisecond)
       time_taken = end_time - start_time
       IO.puts("Time taken: #{time_taken}")
       System.halt(0)
     else
-      check_convergence_new(nodes_list, start_time, convergance_num)
+      check_convergence_new(nodes_list, start_time)
     end
   end
 
