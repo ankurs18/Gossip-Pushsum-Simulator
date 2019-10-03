@@ -11,11 +11,11 @@ defmodule GPS.Gossip.Node do
   end
 
   def add_neighbor(pid, new_neighbor) do
-    GenServer.cast(pid, {:add_neighbor,new_neighbor})
+    GenServer.cast(pid, {:add_neighbor, new_neighbor})
   end
 
   def add_multiple_neighbors(pid, new_neighbors) do
-    GenServer.cast(pid, {:set_neighbors,new_neighbors})
+    GenServer.cast(pid, {:set_neighbors, new_neighbors})
   end
 
   def start_link(_) do
@@ -75,36 +75,12 @@ defmodule GPS.Gossip.Node do
     {:noreply, state}
   end
 
-  # def handle_cast({:send_next_old, message}, {neighbors, count, is_active}) do
-  #   active_neighbors = Enum.filter(neighbors, fn pid -> GPS.Gossip.Node.check_active(pid) end)
+  def handle_call({:fetch_neighbors}, _from, {neighbors, count, is_active}) do
+    {:reply, neighbors, {neighbors, count, is_active}}
+  end
 
-  #   if count <= 10 and length(active_neighbors) > 0 do
-  #     IO.puts("len: #{length(active_neighbors)}")
-  #     curr_neighbor = Enum.random(active_neighbors)
-
-  #     IO.inspect(curr_neighbor)
-  #     send_message(curr_neighbor, :rumor)
-  #   end
-
-  #   is_active = if count == 10, do: false, else: is_active
-
-  #   IO.inspect(%{"pid" => self(), "count" => count})
-
-  #   # count = if message == :rumor, do: count + 1, else: count
-  #   resend_gossip(self())
-  #   {:noreply, {neighbors, count + 1, is_active}}
-  # end
-
-  # def handle_call({:isactive}, _from, {neighbors, count, is_active}) do
-  #   {:reply, is_active, {neighbors, count, is_active}}
-  # end
-
-  # def handle_call({:fetch_count}, _from, {neighbors, count, is_active}) do
-  #   {:reply, count, {neighbors, count, is_active}}
-  # end
-
-  # def handle_call({:pick_random}, _from, {neighbors, count, is_active}) do
-  #   random_pid = Enum.random(neighbors)
-  #   {:reply, random_pid, {neighbors, count, is_active}}
-  # end
+  def handle_call({:remove_neighbors, nodes_to_remove}, _from, {neighbors, count, is_active}) do
+    new_neighbors = neighbors -- nodes_to_remove
+    {:reply, new_neighbors, {new_neighbors, count, is_active}}
+  end
 end
