@@ -4,6 +4,7 @@ A simulator in Elixir for these communication algorithms for aggregating Informa
 The goal of the simulator is to determine the convergence time and ratio for a given number of nodes, and judge the performance for the different topologies. 
 The simulator can run following topologies: 2D Grid, 3D Torus Grid, Honeycomb, Full, Line. 
 Also provided is the simulation and testing of node failure conditions.
+
 Implementation is done as described in this publication: https://www.cs.cornell.edu/johannes/papers/2003/focs2003-gossip.pdf
 
 ## Installation
